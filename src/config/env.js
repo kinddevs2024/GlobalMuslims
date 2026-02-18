@@ -12,8 +12,8 @@ for (const key of requiredVars) {
 
 module.exports = {
   nodeEnv: process.env.NODE_ENV || 'development',
-  botMode: process.env.BOT_MODE || 'webhook',
-  port: Number(process.env.PORT || 3000),
+  botMode: process.env.BOT_MODE || 'polling',
+  port: Number(process.env.PORT || 3002),
   botToken: process.env.BOT_TOKEN,
   mongoUri: process.env.MONGODB_URI,
   webhookDomain: process.env.WEBHOOK_DOMAIN || '',
