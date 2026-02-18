@@ -1,0 +1,37 @@
+{
+    "name": "ramadan-prayer-tracker-bot",
+    "version": "1.0.0",
+    "description": "Production-ready Ramadan & Prayer Tracker Telegram bot for Uzbekistan",
+    "main": "src/server.js",
+    "type": "commonjs",
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "scripts": {
+        "start": "node src/server.js",
+        "dev": "nodemon src/server.js",
+        "lint": "eslint ."
+    },
+    "keywords": [
+        "telegram",
+        "telegraf",
+        "ramadan",
+        "mongodb",
+        "webhook"
+    ],
+    "author": "",
+    "license": "UNLICENSED",
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "express": "^4.21.2",
+        "mongoose": "^8.9.1",
+        "node-cron": "^3.0.3",
+        "pino": "^9.5.0",
+        "telegraf": "^4.16.3"
+    },
+    "devDependencies": {
+        "eslint": "^9.18.0",
+        "nodemon": "^3.1.9",
+        "pino-pretty": "^13.0.0"
+    }
+}
