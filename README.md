@@ -101,7 +101,7 @@ Set in `.env`:
 - `BOT_MODE=polling`
 - `BOT_TOKEN=...`
 - `MONGODB_URI=...`
-- `RAMADAN_START=2026-02-18`
+- `RAMADAN_START=2026-02-19`
 
 Check port and open firewall:
 

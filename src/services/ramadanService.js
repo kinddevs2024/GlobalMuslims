@@ -34,8 +34,10 @@ async function ensureRamadanDay(userId, date = getTodayDate()) {
   return RamadanDay.findOneAndUpdate(
     { userId, date },
     {
+      $set: {
+        dayNumber: state.dayNumber
+      },
       $setOnInsert: {
-        dayNumber: state.dayNumber,
         status: FASTING_STATUSES.PENDING
       }
     },
@@ -89,8 +91,8 @@ async function getCalendarDays(userId) {
   const today = getTodayDate();
   const stateToday = getRamadanState(today);
 
-  const entries = await RamadanDay.find({ userId }).select('date dayNumber status').lean();
-  const statusMap = new Map(entries.map((item) => [item.dayNumber, item.status]));
+  const entries = await RamadanDay.find({ userId }).select('date status').lean();
+  const statusMap = new Map(entries.map((item) => [item.date, item.status]));
   const days = [];
 
   for (let dayNumber = 1; dayNumber <= RAMADAN_TOTAL_DAYS; dayNumber += 1) {
@@ -101,7 +103,8 @@ async function getCalendarDays(userId) {
       emoji = '🔒';
       callbackData = 'locked';
     } else if (stateToday.isFinished) {
-      const status = statusMap.get(dayNumber);
+      const dayDate = addDays(env.ramadanStart, dayNumber - 1);
+      const status = statusMap.get(dayDate);
       if (status === FASTING_STATUSES.COMPLETED) {
         emoji = '✅';
       } else if (status === FASTING_STATUSES.MISSED) {
@@ -112,7 +115,8 @@ async function getCalendarDays(userId) {
       callbackData = `calendar:past:${dayNumber}`;
     } else {
       if (dayNumber < stateToday.dayNumber) {
-        const status = statusMap.get(dayNumber);
+        const dayDate = addDays(env.ramadanStart, dayNumber - 1);
+        const status = statusMap.get(dayDate);
         if (status === FASTING_STATUSES.COMPLETED) {
           emoji = '✅';
         } else if (status === FASTING_STATUSES.MISSED) {
