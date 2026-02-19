@@ -2,6 +2,38 @@
 
 Production-ready Telegram bot built with Node.js LTS, Telegraf, MongoDB (Mongoose), polling/webhook mode, and node-cron.
 
+## Global Muslims Update (Worship Tracker V2)
+
+This repository now contains two parallel modules:
+
+1. **Legacy Telegram Bot (current production flow)**
+
+- Location: `src/`
+- Stack: Node.js + Telegraf + MongoDB
+- Status: kept intact (all old features preserved)
+
+1. **New Full-Stack Web Module (MVP)**
+
+- Location: `web/`
+- Stack: Next.js 14 (App Router) + TypeScript + Tailwind + Framer Motion + PostgreSQL + Prisma + JWT
+- Includes:
+  - Authentication (`register`, `login`, `logout`, `me`)
+  - Daily prayer tracking (`fajr`, `dhuhr`, `asr`, `maghrib`, `isha`)
+  - Ramadan tracking (`fastCompleted`, `taraweeh`, `quranReading`)
+  - Analytics (`weekly`, `monthly`, `yearly`) with streaks and completion rate
+  - Profile actions (`export data`, `delete account`)
+
+### New Web Module Quick Start
+
+```bash
+npm run web:install
+cp web/.env.example web/.env
+npm run web:prisma:generate
+npm run web:dev
+```
+
+Detailed web module docs: `web/README.md`
+
 ## Features
 
 - `/prayer` state-based dynamic UI with single message + inline keyboard

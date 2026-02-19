@@ -10,7 +10,12 @@
     "scripts": {
         "start": "node src/server.js",
         "dev": "nodemon src/server.js",
-        "lint": "eslint ."
+        "lint": "eslint .",
+        "web:install": "npm install --prefix web",
+        "web:dev": "npm run dev --prefix web",
+        "web:build": "npm run build --prefix web",
+        "web:start": "npm run start --prefix web",
+        "web:prisma:generate": "npm run prisma:generate --prefix web"
     },
     "keywords": [
         "telegram",

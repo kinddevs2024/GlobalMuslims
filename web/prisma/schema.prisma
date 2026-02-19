@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String          @id @default(uuid())
+  name      String
+  email     String          @unique
+  password  String
+  createdAt DateTime        @default(now())
+
+  prayerLogs  DailyPrayerLog[]
+  ramadanLogs RamadanLog[]
+  statsCache  StatisticsCache?
+}
+
+model DailyPrayerLog {
+  id       String   @id @default(uuid())
+  userId   String
+  date     DateTime
+  fajr     Boolean  @default(false)
+  dhuhr    Boolean  @default(false)
+  asr      Boolean  @default(false)
+  maghrib  Boolean  @default(false)
+  isha     Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+model RamadanLog {
+  id            String   @id @default(uuid())
+  userId        String
+  date          DateTime
+  fastCompleted Boolean  @default(false)
+  taraweeh      Boolean  @default(false)
+  quranReading  Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+model StatisticsCache {
+  userId       String  @id
+  weeklyScore  Float   @default(0)
+  monthlyScore Float   @default(0)
+  yearlyScore  Float   @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
