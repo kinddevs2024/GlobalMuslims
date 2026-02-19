@@ -54,13 +54,13 @@ export default function AnalyticsPage() {
   return (
     <div className="grid gap-4">
       <section className="glass-card">
-        <h2 className="text-xl font-semibold">Analytics</h2>
-        <p className="mt-1 text-sm text-white/70">Weekly graph, monthly graph and year summary (MVP cards)</p>
+        <h2 className="text-xl font-semibold text-[#1f3a2e]">Analytics</h2>
+        <p className="mt-1 text-sm text-[#6f8479]">Weekly, monthly and yearly progress summary</p>
         <div className="mt-3 flex gap-2">
           {(['weekly', 'monthly', 'yearly'] as Scope[]).map((item) => (
             <button
               key={item}
-              className={`rounded-lg px-3 py-1.5 text-sm ${scope === item ? 'bg-accent text-black' : 'bg-white/10'}`}
+              className={`rounded-xl px-3 py-1.5 text-sm font-medium ${scope === item ? 'bg-[#0d6b4f] text-white' : 'bg-[#edf2ee] text-[#365547]'}`}
               onClick={() => setScope(item)}
             >
               {item}
@@ -69,7 +69,7 @@ export default function AnalyticsPage() {
         </div>
       </section>
 
-      {error && <p className="text-red-300">{error}</p>}
+      {error && <p className="text-red-600">{error}</p>}
 
       {data && (
         <>
@@ -86,8 +86,8 @@ export default function AnalyticsPage() {
           </div>
 
           <section className="glass-card">
-            <h3 className="text-lg font-semibold">Ramadan performance summary</h3>
-            <p className="mt-2 text-sm text-white/80">
+            <h3 className="text-lg font-semibold text-[#1f3a2e]">Ramadan performance summary</h3>
+            <p className="mt-2 text-sm text-[#6f8479]">
               Fast days: {data.ramadan.fastDays} · Taraweeh days: {data.ramadan.taraweehDays} · Qur’an days: {data.ramadan.quranDays}
             </p>
           </section>

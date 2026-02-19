@@ -8,8 +8,8 @@ This module implements the new product specification as a full-stack MVP while k
 - TypeScript
 - Tailwind CSS
 - Framer Motion
-- PostgreSQL
-- Prisma ORM
+- MongoDB
+- Mongoose
 - JWT authentication
 
 ## Project Structure
@@ -37,7 +37,7 @@ web/
 
 ## Database Models
 
-Defined in `prisma/schema.prisma`:
+Defined in Mongo collections via `lib/mongoModels.ts`:
 
 - `User`
 - `DailyPrayerLog`
@@ -47,7 +47,7 @@ Defined in `prisma/schema.prisma`:
 ## Business Rules Implemented
 
 - Only authenticated users can access tracking endpoints.
-- Prayer logs are unique per day per user (`@@unique([userId, date])`).
+- Prayer logs are unique per day per user (`userId + dateKey`).
 - Ramadan logs are unique per day per user.
 - Date keys are normalized by user timezone (`timezone` query/body value).
 - Weekly/monthly/yearly analytics include completion, missed prayers, and streaks.
@@ -87,7 +87,7 @@ cp .env.example .env
 
 1. Fill values:
 
-- `DATABASE_URL=postgresql://...`
+- `MONGODB_URI=mongodb://127.0.0.1:27017/ramadan_tracker`
 - `JWT_SECRET=...`
 - `JWT_EXPIRES_IN=7d`
 
@@ -95,8 +95,6 @@ cp .env.example .env
 
 ```bash
 npm install
-npx prisma generate
-npx prisma migrate dev --name init
 npm run dev
 ```
 

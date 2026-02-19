@@ -3,13 +3,36 @@
 @tailwind utilities;
 
 :root {
-    color-scheme: dark;
+    color-scheme: light;
 }
 
 body {
-    @apply min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-black text-white;
+    @apply min-h-screen bg-[#f8f5f0] text-[#1a2e22];
+    background-image:
+        radial-gradient(circle at 12% 20%, rgba(201, 163, 71, 0.08) 0%, transparent 24%),
+        radial-gradient(circle at 90% 78%, rgba(13, 107, 79, 0.08) 0%, transparent 30%);
+    background-attachment: fixed;
 }
 
 .glass-card {
-    @apply rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-md;
+    @apply rounded-3xl border border-[#e8e1d5] bg-white/90 p-5 backdrop-blur;
+    box-shadow: 0 8px 30px rgba(13, 107, 79, 0.08);
+}
+
+.title-arabic {
+    @apply text-5xl font-bold text-[#0d6b4f] sm:text-6xl;
+    font-family: 'Amiri', serif;
+}
+
+.subtitle-arabic {
+    @apply text-2xl text-[#c9a347];
+    font-family: 'Scheherazade New', serif;
+}
+
+.soft-btn {
+    @apply rounded-2xl border border-[#d8ddd8] bg-white px-4 py-2 text-sm font-medium text-[#1f3a2e] transition hover:-translate-y-0.5 hover:border-[#0d6b4f]/40 hover:shadow;
+}
+
+.soft-btn-active {
+    @apply border-[#0d6b4f] bg-[#0d6b4f] text-white;
 }

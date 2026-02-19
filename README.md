@@ -14,7 +14,7 @@ This repository now contains two parallel modules:
 
 1. **New Full-Stack Web Module (MVP)**
 
-- Location: `web/`
+- Stack: Next.js 14 (App Router) + TypeScript + Tailwind + Framer Motion + MongoDB (shared with bot) + Mongoose + JWT
 - Stack: Next.js 14 (App Router) + TypeScript + Tailwind + Framer Motion + PostgreSQL + Prisma + JWT
 - Includes:
   - Authentication (`register`, `login`, `logout`, `me`)
@@ -28,7 +28,6 @@ This repository now contains two parallel modules:
 ```bash
 npm run web:install
 cp web/.env.example web/.env
-npm run web:prisma:generate
 npm run web:dev
 ```
 

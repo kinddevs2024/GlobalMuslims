@@ -49,18 +49,18 @@ export default function ProfilePage() {
   return (
     <div className="grid gap-4">
       <section className="glass-card">
-        <h2 className="text-xl font-semibold">Profile</h2>
-        <p className="mt-1 text-sm text-white/70">Account settings, data export and account deletion.</p>
+        <h2 className="text-xl font-semibold text-[#1f3a2e]">Profile</h2>
+        <p className="mt-1 text-sm text-[#6f8479]">Account settings, data export and account deletion.</p>
       </section>
 
       <section className="glass-card grid gap-3">
-        <button className="rounded-lg bg-accent px-4 py-2 text-black" onClick={exportData}>
+        <button className="rounded-2xl bg-[#0d6b4f] px-4 py-2.5 text-white transition hover:bg-[#0a5640]" onClick={exportData}>
           Export data
         </button>
-        <button className="rounded-lg border border-red-400/50 px-4 py-2 text-red-300" onClick={deleteAccount}>
+        <button className="rounded-2xl border border-red-300 px-4 py-2.5 text-red-700 transition hover:bg-red-50" onClick={deleteAccount}>
           Delete account
         </button>
-        {message && <p className="text-sm text-white/80">{message}</p>}
+        {message && <p className="text-sm text-[#5e7469]">{message}</p>}
       </section>
     </div>
   );

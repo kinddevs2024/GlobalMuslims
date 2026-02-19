@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { connectMongo } from '@/lib/mongo';
+import { DailyPrayerLog, RamadanLog, StatisticsCache } from '@/lib/mongoModels';
 import { json } from '@/lib/http';
 import { requireAuth } from '@/lib/auth';
 import { analyticsQuerySchema } from '@/lib/validation';
@@ -39,26 +40,39 @@ export async function GET(request: NextRequest) {
     const { start, end } = getRangeByScope(parsed.data.scope, parsed.data.timezone);
     const totalDays = calcTotalDays(parsed.data.scope, parsed.data.timezone);
 
-    const [prayerLogs, ramadanLogs] = await Promise.all([
-        prisma.dailyPrayerLog.findMany({
-            where: {
-                userId: user.id,
-                date: {
-                    gte: start,
-                    lt: end
-                }
+    await connectMongo();
+
+    const [prayerLogsRaw, ramadanLogsRaw] = await Promise.all([
+        DailyPrayerLog.find({
+            userId: user.id,
+            date: {
+                $gte: start,
+                $lt: end
             }
-        }),
-        prisma.ramadanLog.findMany({
-            where: {
-                userId: user.id,
-                date: {
-                    gte: start,
-                    lt: end
-                }
+        }).lean(),
+        RamadanLog.find({
+            userId: user.id,
+            date: {
+                $gte: start,
+                $lt: end
             }
-        })
+        }).lean()
     ]);
+
+    const prayerLogs = prayerLogsRaw.map((item) => ({
+        date: item.date,
+        fajr: Boolean(item.fajr),
+        dhuhr: Boolean(item.dhuhr),
+        asr: Boolean(item.asr),
+        maghrib: Boolean(item.maghrib),
+        isha: Boolean(item.isha)
+    }));
+
+    const ramadanLogs = ramadanLogsRaw.map((item) => ({
+        fastCompleted: Boolean(item.fastCompleted),
+        taraweeh: Boolean(item.taraweeh),
+        quranReading: Boolean(item.quranReading)
+    }));
 
     const prayer = buildPrayerSummary(prayerLogs, totalDays);
     const ramadan = buildRamadanSummary(ramadanLogs);
@@ -69,20 +83,25 @@ export async function GET(request: NextRequest) {
         ramadan
     };
 
-    await prisma.statisticsCache.upsert({
-        where: { userId: user.id },
-        update: {
-            weeklyScore: parsed.data.scope === 'weekly' ? prayer.completionRate : undefined,
-            monthlyScore: parsed.data.scope === 'monthly' ? prayer.completionRate : undefined,
-            yearlyScore: parsed.data.scope === 'yearly' ? prayer.completionRate : undefined
+    const cacheUpdate: Record<string, number> = {};
+    if (parsed.data.scope === 'weekly') {
+        cacheUpdate.weeklyScore = prayer.completionRate;
+    }
+    if (parsed.data.scope === 'monthly') {
+        cacheUpdate.monthlyScore = prayer.completionRate;
+    }
+    if (parsed.data.scope === 'yearly') {
+        cacheUpdate.yearlyScore = prayer.completionRate;
+    }
+
+    await StatisticsCache.findOneAndUpdate(
+        { userId: user.id },
+        {
+            $set: cacheUpdate,
+            $setOnInsert: { userId: user.id }
         },
-        create: {
-            userId: user.id,
-            weeklyScore: parsed.data.scope === 'weekly' ? prayer.completionRate : 0,
-            monthlyScore: parsed.data.scope === 'monthly' ? prayer.completionRate : 0,
-            yearlyScore: parsed.data.scope === 'yearly' ? prayer.completionRate : 0
-        }
-    });
+        { upsert: true, new: true }
+    );
 
     return json({ ok: true, data: payload });
 }

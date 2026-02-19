@@ -31,6 +31,10 @@ export function getUserDateKey(date = new Date(), timezone?: string) {
     return new Date(Date.UTC(year, month - 1, day));
 }
 
+export function toDateKey(date: Date) {
+    return date.toISOString().slice(0, 10);
+}
+
 export function getRangeByScope(scope: 'weekly' | 'monthly' | 'yearly', timezone?: string) {
     const today = getUserDateKey(new Date(), timezone);
     const end = new Date(today);

@@ -22,6 +22,10 @@ async function bootstrap() {
   const app = express();
   app.use(express.json());
 
+  app.get('/', (_req, res) => {
+    res.status(200).json({ ok: true, service: 'GlobalMuslims API', health: '/health' });
+  });
+
   app.get('/health', (_, res) => {
     res.status(200).json({ ok: true });
   });

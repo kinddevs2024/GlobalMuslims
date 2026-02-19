@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
-import { prisma } from './prisma';
+import { connectMongo } from './mongo';
+import { WebUser } from './mongoModels';
 
 const JWT_EXPIRES_IN =
     (process.env.JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'] | undefined) || '7d';
@@ -73,10 +74,19 @@ export async function requireAuth(request: NextRequest) {
         return null;
     }
 
-    const user = await prisma.user.findUnique({
-        where: { id: payload.userId },
-        select: { id: true, name: true, email: true, createdAt: true }
-    });
+    await connectMongo();
+    const user = (await WebUser.findById(payload.userId).lean()) as
+        | { _id: unknown; name: string; email: string; createdAt: Date }
+        | null;
 
-    return user;
+    if (!user) {
+        return null;
+    }
+
+    return {
+        id: String(user._id),
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt
+    };
 }

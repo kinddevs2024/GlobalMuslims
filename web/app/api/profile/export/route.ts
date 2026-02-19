@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { connectMongo } from '@/lib/mongo';
+import { DailyPrayerLog, RamadanLog, StatisticsCache } from '@/lib/mongoModels';
 import { requireAuth } from '@/lib/auth';
 import { json } from '@/lib/http';
 
@@ -9,18 +10,12 @@ export async function GET(request: NextRequest) {
         return json({ ok: false, message: 'Unauthorized' }, 401);
     }
 
+    await connectMongo();
+
     const [prayers, ramadan, statsCache] = await Promise.all([
-        prisma.dailyPrayerLog.findMany({
-            where: { userId: user.id },
-            orderBy: { date: 'asc' }
-        }),
-        prisma.ramadanLog.findMany({
-            where: { userId: user.id },
-            orderBy: { date: 'asc' }
-        }),
-        prisma.statisticsCache.findUnique({
-            where: { userId: user.id }
-        })
+        DailyPrayerLog.find({ userId: user.id }).sort({ date: 1 }).lean(),
+        RamadanLog.find({ userId: user.id }).sort({ date: 1 }).lean(),
+        StatisticsCache.findOne({ userId: user.id }).lean()
     ]);
 
     return json({
