@@ -50,15 +50,19 @@ function getStatusEmoji(status, isToday, isFuture) {
     return '🔒';
   }
 
-  if (isToday) {
-    return '🟡';
-  }
-
   if (status === 'completed') {
     return '✅';
   }
 
-  if (status === 'missed' || status === 'pending') {
+  if (status === 'missed') {
+    return '❌';
+  }
+
+  if (isToday) {
+    return '🟡';
+  }
+
+  if (status === 'pending') {
     return '❌';
   }
 
@@ -271,12 +275,6 @@ async function buildDayDetailView(userId, dayNumber) {
     '',
     `🌅 Saharlik: ${prayerTimes.saharlik}`,
     `🌇 Iftorlik: ${prayerTimes.iftorlik}`,
-    '',
-    `Fajr: ${prayerTimes.fajr}`,
-    `Dhuhr: ${prayerTimes.dhuhr}`,
-    `Asr: ${prayerTimes.asr}`,
-    `Maghrib: ${prayerTimes.maghrib}`,
-    `Isha: ${prayerTimes.isha}`,
     '',
     'Holat:',
     toStatusText(status)

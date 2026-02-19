@@ -197,7 +197,31 @@ function countCompleted(prayerLog) {
   return PRAYERS.filter((prayer) => prayerLog.prayers[prayer.key]).length;
 }
 
-function buildPrayerText(prayerLog, state, uiState = {}) {
+function getPrayerTimeByKey(prayer, timings) {
+  if (prayer.apiKey === 'Fajr') {
+    return timings.fajr;
+  }
+
+  if (prayer.apiKey === 'Dhuhr') {
+    return timings.dhuhr;
+  }
+
+  if (prayer.apiKey === 'Asr') {
+    return timings.asr;
+  }
+
+  if (prayer.apiKey === 'Maghrib') {
+    return timings.maghrib;
+  }
+
+  if (prayer.apiKey === 'Isha') {
+    return timings.isha;
+  }
+
+  return '--:--';
+}
+
+function buildPrayerText(prayerLog, state, timings, uiState = {}) {
   if (prayerLog.isClosed) {
     return [
       '🔒 Bugungi kun yopilgan.',
@@ -209,7 +233,8 @@ function buildPrayerText(prayerLog, state, uiState = {}) {
 
   for (const prayer of PRAYERS) {
     const icon = prayerLineIcon(prayer.key, prayerLog, state.activeMap, state.passedMap);
-    lines.push(icon ? `${icon} ${prayer.label}` : prayer.label);
+    const time = getPrayerTimeByKey(prayer, timings);
+    lines.push(icon ? `${icon} ${prayer.label} — ${time}` : `${prayer.label} — ${time}`);
   }
 
   const completedCount = countCompleted(prayerLog);
@@ -236,7 +261,7 @@ async function buildPrayerView(prayerLog, date, uiState = {}) {
   const completedCount = countCompleted(prayerLog);
 
   return {
-    text: buildPrayerText(prayerLog, timeState, uiState),
+    text: buildPrayerText(prayerLog, timeState, timings, uiState),
     keyboard: prayerLog.isClosed
       ? undefined
       : buildPrayerKeyboard(date, {
