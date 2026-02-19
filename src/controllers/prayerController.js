@@ -4,6 +4,7 @@ const { getTodayDate } = require('../services/ramadanService');
 const { upsertTelegramUser } = require('../services/userService');
 const { getTelegramIdentity, safeEditMessageText } = require('../utils/telegram');
 const env = require('../config/env');
+const ramadanTimetable = require('../config/ramadanTimetable');
 
 const PRAYERS = [
   { key: 'bomdod', label: 'Bomdod', apiKey: 'Fajr' },
@@ -75,6 +76,7 @@ function isWithinRamadanRange(dateStr) {
 }
 
 async function fetchPrayerTimings(date) {
+  const fixedTimes = ramadanTimetable[date];
   const shiftDays = Number(process.env.RAMADAN_TIMETABLE_SHIFT_DAYS || 0);
   const sourceDate = shiftDate(date, shiftDays);
 
@@ -84,13 +86,13 @@ async function fetchPrayerTimings(date) {
 
   const fallback = {
     date,
-    fajr: '--:--',
+    fajr: fixedTimes?.saharlik || '--:--',
     dhuhr: '--:--',
     asr: '--:--',
-    maghrib: '--:--',
+    maghrib: fixedTimes?.iftorlik || '--:--',
     isha: '--:--',
-    saharlik: '--:--',
-    iftorlik: '--:--'
+    saharlik: fixedTimes?.saharlik || '--:--',
+    iftorlik: fixedTimes?.iftorlik || '--:--'
   };
 
   if (!isWithinRamadanRange(date)) {
@@ -110,10 +112,10 @@ async function fetchPrayerTimings(date) {
     const target = rows.find((row) => row?.date?.gregorian?.date === toAladhanDate(sourceDate));
     const timings = target?.timings || {};
 
-    const fajr = (timings.Fajr || '--:--').split(' ')[0];
+    const fajr = fixedTimes?.saharlik || (timings.Fajr || '--:--').split(' ')[0];
     const dhuhr = (timings.Dhuhr || '--:--').split(' ')[0];
     const asr = (timings.Asr || '--:--').split(' ')[0];
-    const maghrib = (timings.Maghrib || '--:--').split(' ')[0];
+    const maghrib = fixedTimes?.iftorlik || (timings.Maghrib || '--:--').split(' ')[0];
     const isha = (timings.Isha || '--:--').split(' ')[0];
 
     return {

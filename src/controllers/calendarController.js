@@ -18,6 +18,7 @@ const {
 const { safeEditMessageText } = require('../utils/telegram');
 const { upsertTelegramUser } = require('../services/userService');
 const { getTelegramIdentity } = require('../utils/telegram');
+const ramadanTimetable = require('../config/ramadanTimetable');
 
 function buildCalendarText(todayDayNumber, isActive) {
   const lines = ['🗓 Ramazon kalendari'];
@@ -181,6 +182,21 @@ function getNowMinutesInTimezone() {
 }
 
 async function fetchPrayerTimes(dateStr) {
+  const fixedTimes = ramadanTimetable[dateStr];
+
+  if (fixedTimes) {
+    return {
+      date: dateStr,
+      fajr: fixedTimes.saharlik,
+      dhuhr: '--:--',
+      asr: '--:--',
+      maghrib: fixedTimes.iftorlik,
+      isha: '--:--',
+      saharlik: fixedTimes.saharlik,
+      iftorlik: fixedTimes.iftorlik
+    };
+  }
+
   const shiftDays = Number(process.env.RAMADAN_TIMETABLE_SHIFT_DAYS || 0);
   const sourceDate = shiftDate(dateStr, shiftDays);
 
