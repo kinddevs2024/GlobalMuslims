@@ -5,8 +5,16 @@ const { Schema, model, models, Types } = mongoose;
 const webUserSchema = new Schema(
     {
         name: { type: String, required: true, trim: true },
-        email: { type: String, required: true, unique: true, index: true, lowercase: true, trim: true },
-        password: { type: String, required: true },
+        email: { type: String, unique: true, index: true, lowercase: true, trim: true, sparse: true },
+        password: { type: String },
+        telegramId: { type: String, unique: true, index: true, sparse: true },
+        username: { type: String, index: true, sparse: true },
+        image: { type: String },
+        authCode: { type: String },
+        authCodeExpires: { type: Date },
+        authStep: { type: String, default: null },
+        theme: { type: String, default: 'light' },
+        language: { type: String, default: 'uz' },
         createdAt: { type: Date, default: Date.now }
     },
     { versionKey: false }

@@ -20,10 +20,20 @@ export async function POST(request: NextRequest) {
             return json({ ok: false, message: 'Invalid payload', errors: parsed.error.flatten() }, 400);
         }
 
-        const { email, password } = parsed.data;
+        const { identity, password } = parsed.data;
+        const normalizedIdentity = identity.toLowerCase().replace('@', '');
 
         await connectMongo();
-        const user = await WebUser.findOne({ email });
+        const user = await WebUser.findOne({
+            $or: [
+                { email: identity.toLowerCase() },
+                { telegramId: identity },
+                { telegramId: normalizedIdentity },
+                { username: identity.toLowerCase() },
+                { username: normalizedIdentity }
+            ]
+        });
+
         if (!user) {
             return json({ ok: false, message: 'Invalid credentials' }, 401);
         }

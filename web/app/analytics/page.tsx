@@ -28,10 +28,14 @@ export default function AnalyticsPage() {
   const [scope, setScope] = useState<Scope>('weekly');
   const [data, setData] = useState<AnalyticsPayload | null>(null);
   const [error, setError] = useState('');
+  const [timezone, setTimezone] = useState('');
 
-  const timezone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, []);
+  useEffect(() => {
+    setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  }, []);
 
   async function load(scopeValue: Scope) {
+    if (!timezone) return;
     setError('');
 
     const response = await fetch(
@@ -48,8 +52,14 @@ export default function AnalyticsPage() {
   }
 
   useEffect(() => {
-    load(scope);
-  }, [scope]);
+    if (timezone) {
+      load(scope);
+    }
+  }, [scope, timezone]);
+
+  if (!timezone) {
+    return <div className="p-8 text-center text-[var(--text-muted)] animate-pulse">Initializing...</div>;
+  }
 
   return (
     <div className="grid gap-4">

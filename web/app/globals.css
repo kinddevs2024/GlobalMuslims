@@ -3,36 +3,67 @@
 @tailwind utilities;
 
 :root {
-    color-scheme: light;
+    --background: #f8f5f0;
+    --foreground: #1a2e22;
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --card-border: #e8e1d5;
+    --text-muted: #6f8479;
+    --accent: #0d6b4f;
+    --accent-hover: #0a5640;
+    --secondary: #c9a347;
+    --shadow: rgba(13, 107, 79, 0.08);
+}
+
+[data-theme='dark'] {
+    --background: #0f1712;
+    --foreground: #e4e9e6;
+    --card-bg: rgba(22, 33, 27, 0.95);
+    --card-border: #2a3a31;
+    --text-muted: #94a39b;
+    --accent: #15936d;
+    --accent-hover: #19b384;
+    --secondary: #d4b15c;
+    --shadow: rgba(0, 0, 0, 0.3);
 }
 
 body {
-    @apply min-h-screen bg-[#f8f5f0] text-[#1a2e22];
+    @apply min-h-screen transition-colors duration-300;
+    background-color: var(--background);
+    color: var(--foreground);
     background-image:
-        radial-gradient(circle at 12% 20%, rgba(201, 163, 71, 0.08) 0%, transparent 24%),
-        radial-gradient(circle at 90% 78%, rgba(13, 107, 79, 0.08) 0%, transparent 30%);
+        radial-gradient(circle at 12% 20%, rgba(201, 163, 71, 0.05) 0%, transparent 24%),
+        radial-gradient(circle at 90% 78%, rgba(13, 107, 79, 0.05) 0%, transparent 30%);
     background-attachment: fixed;
 }
 
 .glass-card {
-    @apply rounded-3xl border border-[#e8e1d5] bg-white/90 p-5 backdrop-blur;
-    box-shadow: 0 8px 30px rgba(13, 107, 79, 0.08);
+    @apply rounded-3xl border backdrop-blur transition-all duration-300;
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+    box-shadow: 0 8px 30px var(--shadow);
+    padding: 1.25rem;
 }
 
 .title-arabic {
-    @apply text-5xl font-bold text-[#0d6b4f] sm:text-6xl;
+    @apply text-5xl font-bold sm:text-6xl;
+    color: var(--accent);
     font-family: 'Amiri', serif;
 }
 
 .subtitle-arabic {
-    @apply text-2xl text-[#c9a347];
+    @apply text-2xl;
+    color: var(--secondary);
     font-family: 'Scheherazade New', serif;
 }
 
 .soft-btn {
-    @apply rounded-2xl border border-[#d8ddd8] bg-white px-4 py-2 text-sm font-medium text-[#1f3a2e] transition hover:-translate-y-0.5 hover:border-[#0d6b4f]/40 hover:shadow;
+    @apply rounded-2xl border bg-white/50 px-4 py-2 text-sm font-medium transition hover:-translate-y-0.5 hover:shadow;
+    border-color: var(--card-border);
+    color: var(--foreground);
 }
 
 .soft-btn-active {
-    @apply border-[#0d6b4f] bg-[#0d6b4f] text-white;
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: white;
 }

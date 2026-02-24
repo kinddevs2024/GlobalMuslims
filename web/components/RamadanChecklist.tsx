@@ -1,5 +1,7 @@
 'use client';
 
+import { useAppContext } from '@/lib/context';
+
 type RamadanLog = {
   fastCompleted: boolean;
   taraweeh: boolean;
@@ -14,35 +16,37 @@ type RamadanChecklistProps = {
 };
 
 export function RamadanChecklist({ active, log, onToggle, onActiveChange }: RamadanChecklistProps) {
+  const { t } = useAppContext();
+  
   return (
     <section className="glass-card">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-[#1f3a2e]">Ramadan mode</h2>
+        <h2 className="text-lg font-semibold text-[var(--foreground)]">{t('ramadan_kareem')}</h2>
         <button
-          className={`rounded-xl px-3 py-1.5 text-sm font-medium transition ${active ? 'bg-[#0d6b4f] text-white' : 'bg-[#edf2ee] text-[#365547]'}`}
+          className={`rounded-xl px-3 py-1.5 text-sm font-medium transition ${active ? 'bg-[var(--accent)] text-white' : 'bg-[var(--background)] text-[var(--text-muted)]'}`}
           onClick={() => onActiveChange(!active)}
         >
-          {active ? 'Active' : 'Off'}
+          {active ? 'ON' : 'OFF'}
         </button>
       </div>
 
       {active ? (
         <div className="grid gap-2">
-          <button className="flex justify-between rounded-2xl border border-[#d6ddd7] bg-[#fcfcfa] px-4 py-3 transition hover:border-[#0d6b4f]/45" onClick={() => onToggle('fastCompleted')}>
-            <span>Fast completed</span>
-            <span className={log.fastCompleted ? 'text-[#0d6b4f]' : 'text-[#7c9085]'}>{log.fastCompleted ? '✓' : '○'}</span>
+          <button className="flex justify-between rounded-2xl border border-[var(--card-border)] bg-[var(--background)] px-4 py-3 transition hover:border-[var(--accent)]/45" onClick={() => onToggle('fastCompleted')}>
+            <span className="text-[var(--foreground)]">Fast completed</span>
+            <span className={log.fastCompleted ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}>{log.fastCompleted ? '✓' : '○'}</span>
           </button>
-          <button className="flex justify-between rounded-2xl border border-[#d6ddd7] bg-[#fcfcfa] px-4 py-3 transition hover:border-[#0d6b4f]/45" onClick={() => onToggle('taraweeh')}>
-            <span>Taraweeh</span>
-            <span className={log.taraweeh ? 'text-[#0d6b4f]' : 'text-[#7c9085]'}>{log.taraweeh ? '✓' : '○'}</span>
+          <button className="flex justify-between rounded-2xl border border-[var(--card-border)] bg-[var(--background)] px-4 py-3 transition hover:border-[var(--accent)]/45" onClick={() => onToggle('taraweeh')}>
+            <span className="text-[var(--foreground)]">Taraweeh</span>
+            <span className={log.taraweeh ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}>{log.taraweeh ? '✓' : '○'}</span>
           </button>
-          <button className="flex justify-between rounded-2xl border border-[#d6ddd7] bg-[#fcfcfa] px-4 py-3 transition hover:border-[#0d6b4f]/45" onClick={() => onToggle('quranReading')}>
-            <span>Qur’an reading</span>
-            <span className={log.quranReading ? 'text-[#0d6b4f]' : 'text-[#7c9085]'}>{log.quranReading ? '✓' : '○'}</span>
+          <button className="flex justify-between rounded-2xl border border-[var(--card-border)] bg-[var(--background)] px-4 py-3 transition hover:border-[var(--accent)]/45" onClick={() => onToggle('quranReading')}>
+            <span className="text-[var(--foreground)]">Qur’an reading</span>
+            <span className={log.quranReading ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}>{log.quranReading ? '✓' : '○'}</span>
           </button>
         </div>
       ) : (
-        <p className="text-sm text-[#6f8479]">Enable Ramadan mode manually or connect Hijri calendar API later.</p>
+        <p className="text-sm text-[var(--text-muted)]">Enable Ramadan mode manually.</p>
       )}
     </section>
   );

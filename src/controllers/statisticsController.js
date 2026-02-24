@@ -5,7 +5,8 @@ const {
   MONTHS,
   buildMonthSelectorKeyboard,
   buildMonthSummaryKeyboard,
-  buildDayDetailKeyboard
+  buildDayDetailKeyboard,
+  buildYearlySummaryKeyboard
 } = require('../keyboards/statisticsKeyboard');
 const { safeEditMessageText, getTelegramIdentity } = require('../utils/telegram');
 const { upsertTelegramUser } = require('../services/userService');
@@ -40,6 +41,20 @@ function getMonthRange(monthNumber, year, today) {
 function formatUzbekDate(dateStr) {
   const [year, month, day] = dateStr.split('-').map(Number);
   return `${day}-${MONTHS[month - 1]} ${year}`;
+}
+
+function buildYearlySummaryText(year, counters, total) {
+  return [
+    `📊 ${year}-yil yillik statistikasi`,
+    '',
+    `Bomdod: ${counters.bomdod}`,
+    `Peshin: ${counters.peshin}`,
+    `Asr: ${counters.asr}`,
+    `Shom: ${counters.shom}`,
+    `Xufton: ${counters.xufton}`,
+    '',
+    `Jami: ${total} ta namoz`
+  ].join('\n');
 }
 
 function buildMonthSummaryText(monthName, counters, total) {
@@ -117,6 +132,47 @@ async function buildMonthSummaryView(userId, monthNumber) {
   };
 }
 
+async function buildYearlySummaryView(userId) {
+  const year = getCurrentYear();
+  const start = `${year}-01-01`;
+  const end = `${year}-12-31`;
+
+  const emptyCounters = {
+    bomdod: 0,
+    peshin: 0,
+    asr: 0,
+    shom: 0,
+    xufton: 0
+  };
+
+  const logs = await PrayerLog.find({
+    userId,
+    date: {
+      $gte: start,
+      $lte: end
+    }
+  }).lean();
+
+  const counters = logs.reduce(
+    (acc, log) => {
+      for (const prayer of PRAYER_NAMES) {
+        if (log.prayers?.[prayer.key] === true) {
+          acc[prayer.key] += 1;
+        }
+      }
+      return acc;
+    },
+    { ...emptyCounters }
+  );
+
+  const total = Object.values(counters).reduce((sum, value) => sum + value, 0);
+
+  return {
+    text: buildYearlySummaryText(year, counters, total),
+    keyboard: buildYearlySummaryKeyboard()
+  };
+}
+
 async function buildDayDetailView(userId, monthNumber, dayNumber) {
   const today = getTodayDate();
   const year = getCurrentYear();
@@ -146,9 +202,11 @@ async function buildDayDetailView(userId, monthNumber, dayNumber) {
 
 async function handleStatisticsCommand(ctx) {
   const identity = getTelegramIdentity(ctx.from);
-  await upsertTelegramUser(identity);
+  const user = await upsertTelegramUser(identity);
 
-  await ctx.reply('📊 Qaysi oy statistikasini ko‘rmoqchisiz?', buildMonthSelectorKeyboard());
+  const yearlyView = await buildYearlySummaryView(user._id);
+
+  await ctx.reply(yearlyView.text, buildMonthSelectorKeyboard());
 }
 
 async function handleStatisticsCallback(ctx) {
@@ -163,10 +221,11 @@ async function handleStatisticsCallback(ctx) {
   const user = await upsertTelegramUser(identity);
 
   if (data === 'stats:back:months') {
+    const yearlyView = await buildYearlySummaryView(user._id);
     await ctx.answerCbQuery('Oylar ro‘yxati');
     await safeEditMessageText(
       ctx,
-      '📊 Qaysi oy statistikasini ko‘rmoqchisiz?',
+      yearlyView.text,
       buildMonthSelectorKeyboard()
     );
     return;

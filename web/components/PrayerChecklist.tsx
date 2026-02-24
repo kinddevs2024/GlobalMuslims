@@ -1,6 +1,7 @@
 'use client';
 
 import { PRAYER_KEYS, PrayerKey } from '@/lib/constants';
+import { useAppContext } from '@/lib/context';
 
 const labels: Record<PrayerKey, string> = {
   fajr: 'Fajr',
@@ -24,18 +25,20 @@ type PrayerChecklistProps = {
 };
 
 export function PrayerChecklist({ log, onToggle }: PrayerChecklistProps) {
+  const { t } = useAppContext();
+  
   return (
     <section className="glass-card">
-      <h2 className="mb-4 text-lg font-semibold text-[#1f3a2e]">Today’s prayer checklist</h2>
+      <h2 className="mb-4 text-lg font-semibold text-[var(--foreground)]">{t('todays_prayers')}</h2>
       <div className="grid gap-2.5">
         {PRAYER_KEYS.map((key) => (
           <button
             key={key}
-            className="flex items-center justify-between rounded-2xl border border-[#d6ddd7] bg-[#fcfcfa] px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-[#0d6b4f]/45 hover:shadow-sm"
+            className="flex items-center justify-between rounded-2xl border border-[var(--card-border)] bg-[var(--background)] px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-[var(--accent)]/45 hover:shadow-sm"
             onClick={() => onToggle(key)}
           >
-            <span className="font-medium text-[#274537]">{labels[key]}</span>
-            <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-sm ${log[key] ? 'bg-[#0d6b4f] text-white' : 'bg-[#eef2ee] text-[#668074]'}`}>
+            <span className="font-medium text-[var(--foreground)]">{labels[key]}</span>
+            <span className={`inline-flex h-7 w-7 items-center justify-center rounded-full text-sm ${log[key] ? 'bg-[var(--accent)] text-white' : 'bg-[var(--background)] border border-[var(--card-border)] text-[var(--text-muted)]'}`}>
               {log[key] ? '✓' : '○'}
             </span>
           </button>

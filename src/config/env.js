@@ -19,5 +19,6 @@ module.exports = {
   webhookDomain: process.env.WEBHOOK_DOMAIN || '',
   webhookPath: process.env.WEBHOOK_PATH || '/telegram/webhook',
   ramadanStart: process.env.RAMADAN_START,
-  timezone: process.env.APP_TIMEZONE || 'Asia/Tashkent'
+  timezone: process.env.APP_TIMEZONE || 'Asia/Tashkent',
+  webAppUrl: process.env.WEB_APP_URL || 'http://localhost:3000'
 };

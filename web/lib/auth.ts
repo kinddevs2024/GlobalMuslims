@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
@@ -20,6 +21,34 @@ function getJwtSecret() {
 type JwtPayload = {
     userId: string;
 };
+
+export type TelegramUserData = {
+    id: number;
+    first_name: string;
+    last_name?: string;
+    username?: string;
+    photo_url?: string;
+    auth_date: number;
+    hash: string;
+};
+
+export function verifyTelegramAuth(data: TelegramUserData): boolean {
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    if (!token) {
+        throw new Error('TELEGRAM_BOT_TOKEN is required');
+    }
+
+    const { hash, ...rest } = data;
+    const dataCheckString = Object.entries(rest)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([key, value]) => `${key}=${value}`)
+        .join('\n');
+
+    const secretKey = crypto.createHash('sha256').update(token).digest();
+    const hmac = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
+
+    return hmac === hash;
+}
 
 export function signToken(payload: JwtPayload) {
     return jwt.sign(payload, getJwtSecret(), { expiresIn: JWT_EXPIRES_IN });
@@ -76,7 +105,14 @@ export async function requireAuth(request: NextRequest) {
 
     await connectMongo();
     const user = (await WebUser.findById(payload.userId).lean()) as
-        | { _id: unknown; name: string; email: string; createdAt: Date }
+        | {
+            _id: unknown;
+            name: string;
+            email?: string;
+            telegramId?: string;
+            image?: string;
+            createdAt: Date;
+        }
         | null;
 
     if (!user) {
@@ -87,6 +123,8 @@ export async function requireAuth(request: NextRequest) {
         id: String(user._id),
         name: user.name,
         email: user.email,
+        telegramId: user.telegramId,
+        image: user.image,
         createdAt: user.createdAt
     };
 }

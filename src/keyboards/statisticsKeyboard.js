@@ -58,9 +58,16 @@ function buildDayDetailKeyboard(monthNumber) {
   ]);
 }
 
+function buildYearlySummaryKeyboard() {
+  return Markup.inlineKeyboard([
+    [Markup.button.callback('⬅️ Oylar', 'stats:back:months')]
+  ]);
+}
+
 module.exports = {
   MONTHS,
   buildMonthSelectorKeyboard,
   buildMonthSummaryKeyboard,
-  buildDayDetailKeyboard
+  buildDayDetailKeyboard,
+  buildYearlySummaryKeyboard
 };
